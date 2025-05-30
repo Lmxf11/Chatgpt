@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Site de IA do Miguel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #f1f1f1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #00ff88;
+      margin-bottom: 20px;
+      font-size: 3rem;
+    }
+
+    input, button {
+      padding: 15px;
+      margin: 10px;
+      font-size: 1.5rem;
+      border-radius: 5px;
+      border: none;
+    }
+
+    input {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    button {
+      background-color: #00ff88;
+      color: #000;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #00cc70;
+    }
+
+    #resposta {
+      background-color: #1e1e1e;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      font-size: 1.4rem;
+      white-space: pre-wrap;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fala com a IA!</h1>
+  <input type="text" id="pergunta" placeholder="Pergunta algo pra IA..." />
+  <button onclick="perguntarIA()">Perguntar</button>
+  <div id="resposta">Esperando pergunta...</div>
+<script>
+  async function perguntarIA() {
+    const pergunta = document.getElementById("pergunta").value;
+    const respostaDiv = document.getElementById("resposta");
+
+    if (!pergunta.trim()) {
+      respostaDiv.textContent = "Digite uma pergunta primeiro!";
+      return;
+    }
+
+    respostaDiv.textContent = "Pensando...";
+
+    try {
+      const resposta = await fetch("https://phind-api-proxy.vercel.app/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt: pergunta
+        })
+      });
+
+      const dados = await resposta.json();
+
+      if (dados && dados.text) {
+        respostaDiv.textContent = dados.text.trim();
+      } else {
+        respostaDiv.textContent = "A IA não respondeu corretamente.";
+      }
+    } catch (erro) {
+      respostaDiv.textContent = `Erro ao conectar: ${erro.message}`;
+    }
+  }
+</script>
+</body>
+</html>
